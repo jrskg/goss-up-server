@@ -242,7 +242,11 @@ export const addPushToken = asyncHandler(async (req, res, next) => {
 
 export const updateSettings = asyncHandler(async (req, res, next) => {
   const { notificationEnabled, theme, soundEnabled } = req.body;
-  const updatedSettings = {};
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    return next(new ApiError(BAD_REQUEST, "User not found"));
+  }
+  const updatedSettings = {...user.settings};
   if (typeof notificationEnabled === "boolean")
     updatedSettings.notificationEnabled = notificationEnabled;
   if (THEME.includes(theme)) updatedSettings.theme = theme;
@@ -251,7 +255,7 @@ export const updateSettings = asyncHandler(async (req, res, next) => {
   if (Object.keys(updatedSettings).length === 0) {
     res.status(OK).json(new ApiResponse(OK, "No settings to update"));
     return;
-  }
+  }  
   await User.findByIdAndUpdate(
     req.user._id,
     { settings: updatedSettings },
@@ -315,6 +319,7 @@ export const forgetPassword = asyncHandler(async (req, res, next) => {
   });
   user.verificationAndResetToken = resetToken;
   user.verificationAndResetTokenExpires = Date.now() + 5 * 60 * 1000;
+  user.resetTokenStatus = "unverified";
   await user.save();
   const link = `${FRONTEND_URL}/password/reset/${resetToken}`;
   await sendEmail({
@@ -329,6 +334,26 @@ export const forgetPassword = asyncHandler(async (req, res, next) => {
     .json(new ApiResponse(OK, "Password reset link sent to your email"));
 });
 
+export const verifyResetToken = asyncHandler(async (req, res, next) => {
+  const { verificationAndResetToken } = req.body;
+  if (!verificationAndResetToken || verificationAndResetToken.trim() === "") {
+    return next(new ApiError(BAD_REQUEST, "Please provide token"));
+  }
+  const user = await User.findOne({
+    verificationAndResetToken: verificationAndResetToken,
+    verificationAndResetTokenExpires: { $gt: Date.now() },
+    resetTokenStatus: "unverified",
+  });
+  if (!user) {
+    return next(new ApiError(BAD_REQUEST, "Invalid token"));
+  }
+  user.resetTokenStatus = "verified";
+  await user.save();
+  res
+    .status(OK)
+    .json(new ApiResponse(OK, "Identity verification successfull"));
+});
+
 export const resetPassword = asyncHandler(async (req, res, next) => {
   const { password, verificationAndResetToken } = req.body;
   if (
@@ -341,6 +366,7 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({
     verificationAndResetToken: verificationAndResetToken,
     verificationAndResetTokenExpires: { $gt: Date.now() },
+    resetTokenStatus: "verified",
   });
   if (!user) {
     return next(new ApiError(BAD_REQUEST, "Invalid token"));
@@ -348,6 +374,7 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
   user.password = password;
   user.verificationAndResetToken = undefined;
   user.verificationAndResetTokenExpires = undefined;
+  user.resetTokenStatus = "unset";
   await user.save();
-  res.status(OK).json(new ApiResponse(OK, "Your password has been reset"));
+  res.status(OK).json(new ApiResponse(OK, "Reset done, login with new password"));
 });

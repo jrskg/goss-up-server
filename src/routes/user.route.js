@@ -14,7 +14,8 @@ import {
   updateBio, 
   updateName, 
   updateSettings, 
-  verifyEmail 
+  verifyEmail, 
+  verifyResetToken
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { authenticate } from "../middlewares/auth.middleware.js";
@@ -38,6 +39,7 @@ router.route("/settings")
 router.route("/name").put(authenticate, updateName);
 router.route("/change-password").put(authenticate, changePassword);
 router.route("/forget-password").post(forgetPassword);
+router.route("/verify-reset-token").post(verifyResetToken);
 router.route("/reset-password").post(resetPassword);
       
 

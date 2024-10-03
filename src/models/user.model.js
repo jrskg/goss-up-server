@@ -72,6 +72,11 @@ const userSchema = mongoose.Schema(
     verificationAndResetTokenExpires: {
       type: Date,
     },
+    resetTokenStatus: {
+      type: String,
+      default: "unset",
+      enum: ["unset", "verified", "unverified"],
+    },
   },
   { timestamps: true }
 );
