@@ -7,15 +7,8 @@ import {
   SMTP_PORT,
   SMTP_USER,
 } from "../configs/env.index.js";
-import { firebase } from "../configs/firebase.js";
 import { ApiResponse } from "./ApiResponse.js";
 
-export const sendNotification = async (token, options) => {
-  await firebase.messaging().send({
-    token,
-    notification: options,
-  });
-};
 
 export const cookieOptions = () => ({
   secure: NODE_ENV === "development" ? false : true,

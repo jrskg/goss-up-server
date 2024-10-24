@@ -14,3 +14,8 @@ export const PUSH_PLATFORMS = ["web", "android", "ios"];
 export const THEME = ["light", "dark"];
 
 export const CLN_PROFILE_FOLDER = "gossup_profile";
+
+export const NOTIFICATION_TYPES = ["message", "friend_request", "group_invite"];
+
+export const KAFKA_NOTIFICATION_TOPIC = "kafka-notification-topic";
+export const KAFKA_MESSAGE_TOPIC = "kafka-message-topic";

@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { JWT_EXPIRES, JWT_SECRET } from "../configs/env.index.js";
 import { DEFAULT_BIO } from "../utils/constants.js";
 
-const userSchema = mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,

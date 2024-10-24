@@ -1,24 +1,26 @@
 import express from "express";
-import { 
-  addProfilePicture, 
-  addPushToken, 
-  changePassword, 
-  forgetPassword, 
-  getSettings, 
-  loadUser, 
-  loginUser, 
-  logoutUser, 
-  registerUser, 
-  requestVerificationEmail, 
-  resetPassword, 
-  updateBio, 
-  updateName, 
-  updateSettings, 
-  verifyEmail, 
+import {
+  addProfilePicture,
+  addPushToken,
+  changePassword,
+  forgetPassword,
+  getSettings,
+  getUserDetails,
+  loadUser,
+  loginUser,
+  logoutUser,
+  registerUser,
+  requestVerificationEmail,
+  resetPassword,
+  searchUsers,
+  updateBio,
+  updateName,
+  updateSettings,
+  verifyEmail,
   verifyResetToken
 } from "../controllers/user.controller.js";
-import { upload } from "../middlewares/multer.middleware.js";
 import { authenticate } from "../middlewares/auth.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";
 
 const router = express.Router();  
 
@@ -41,6 +43,10 @@ router.route("/change-password").put(authenticate, changePassword);
 router.route("/forget-password").post(forgetPassword);
 router.route("/verify-reset-token").post(verifyResetToken);
 router.route("/reset-password").post(resetPassword);
+router.route("/search").post(authenticate, searchUsers);
+router.route("/:userId").get(authenticate, getUserDetails);
+
+// router.route("/haha").get(test);
       
 
 export default router;
