@@ -240,7 +240,7 @@ export const getFriendRequests = asyncHandler(async (req, res, next) => {
 });
 
 export const getAllFriends = asyncHandler(async (req, res, next) => {
-  const limit = 5;
+  const limit = 50;
   let page = Number(req.query?.page);
   if (isNaN(page) || page < 1) page = 1;
   const userId = req.user?._id?.toString();
@@ -320,7 +320,7 @@ export const getAllFriends = asyncHandler(async (req, res, next) => {
 });
 
 export const searchInFriends = asyncHandler(async (req, res, next) => {
-  const limit = 5;
+  const limit = 50;
   let page = Number(req.query?.page);
   const query = req.query?.search?.trim() || "";
   if (!query) {

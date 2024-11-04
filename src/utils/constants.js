@@ -19,3 +19,7 @@ export const NOTIFICATION_TYPES = ["message", "friend_request", "group_invite"];
 
 export const KAFKA_NOTIFICATION_TOPIC = "kafka-notification-topic";
 export const KAFKA_MESSAGE_TOPIC = "kafka-message-topic";
+
+export const MESSAGE_TYPES = ["text", "file"];
+export const FILE_TYPES = ["image", "video", "audio", "other"];
+export const CHAT_TYPES = ["one-to-one", "group"]
