@@ -31,8 +31,8 @@ export const createFriendRequest = asyncHandler(async (req, res, next) => {
   if (!receiver.verified) {
     return next(new ApiError(BAD_REQUEST, "User not verified"));
   }
-  let userOneId = new mongoose.Types.ObjectId(req.user._id);
-  let userTwoId = new mongoose.Types.ObjectId(receiverId);
+  let userOneId = req.user._id.toString();
+  let userTwoId = receiver._id.toString();
   if (userOneId > userTwoId) {
     [userOneId, userTwoId] = [userTwoId, userOneId];
   }
@@ -392,7 +392,7 @@ export const searchInFriends = asyncHandler(async (req, res, next) => {
   ]);
   const friends = responseData[0].data;
   const total = responseData[0].total[0] ? responseData[0].total[0].count : 0;
-  const hasMore = page * limit < total;
+  const hasMore = page * limit < total;  
   res.status(OK).json(
     new ApiResponse(OK, "Search in friends success", {
       friends,

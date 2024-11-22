@@ -5,7 +5,7 @@ import { startNotificationConsumer } from "./configs/kafka.js";
 import SocketService from "./services/SocketServices.js";
 
 connectDB().then(() => {
-  startNotificationConsumer();
+  // startNotificationConsumer();
   const server = app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });

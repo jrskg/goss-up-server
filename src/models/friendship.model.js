@@ -36,7 +36,7 @@ friendshipSchema.index({ userTwoId: 1 });
 
 // Normalize userOneId and userTwoId before saving
 friendshipSchema.pre("save", function (next) {
-  if (this.userOneId > this.userTwoId) {
+  if (this.userOneId.toString() > this.userTwoId.toString()) {
     [this.userOneId, this.userTwoId] = [this.userTwoId, this.userOneId];
   }
   next();

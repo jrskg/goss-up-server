@@ -22,9 +22,11 @@ app.get("/", (req, res) => {
 //Import routes
 import userRoute from "./routes/user.route.js";
 import friendshipRoute from "./routes/friendship.route.js";
+import chatRoute from "./routes/chat.route.js";
 //Use routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/friendship", friendshipRoute);
+app.use("/api/v1/chat", chatRoute);
 
 
 app.use(error);

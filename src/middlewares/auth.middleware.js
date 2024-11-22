@@ -14,7 +14,7 @@ export const authenticate = asyncHandler(async (req, _, next) => {
   }
 
   const jwtData = jwt.verify(token, JWT_SECRET);
-  const user = await User.findById(jwtData?._id).select("+password");
+  const user = await User.findById(jwtData?._id).select("+password").lean();
 
   if (!user) {
     throw new ApiError(401, "Invalid access token");

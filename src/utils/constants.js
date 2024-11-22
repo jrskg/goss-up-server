@@ -14,6 +14,7 @@ export const PUSH_PLATFORMS = ["web", "android", "ios"];
 export const THEME = ["light", "dark"];
 
 export const CLN_PROFILE_FOLDER = "gossup_profile";
+export const CLN_CHATICON_FOLDER = "gossup_chaticon";
 
 export const NOTIFICATION_TYPES = ["message", "friend_request", "group_invite"];
 

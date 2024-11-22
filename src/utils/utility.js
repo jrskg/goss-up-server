@@ -108,3 +108,8 @@ export const sendEmail = async ({ toEmail, subject, link, description, btnText }
   });
 };
 
+export const sortUserIds = (a, b) => {
+  let smallerId = a.toString();
+  let biggerId = b.toString();
+  return smallerId > biggerId ? [biggerId, smallerId] : [smallerId, biggerId];
+};

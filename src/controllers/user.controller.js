@@ -419,17 +419,17 @@ export const getUserDetails = asyncHandler(async (req, res, next) => {
   if (!userId || !isValidObjectId(userId)) {
     return next(new ApiError(BAD_REQUEST, "Please provide valid user id"));
   }
-  let smallerId = new mongoose.Types.ObjectId(req.user._id);
-  let biggerId = new mongoose.Types.ObjectId(userId);
-  if (smallerId > biggerId) {
-    [smallerId, biggerId] = [biggerId, smallerId];
-  }
-
   const user = await User.findById(userId).select(
     "name bio profilePic status lastSeen"
   ).lean();
   if (!user) {
     return next(new ApiError(NOT_FOUND, "User not found"));
+  }
+
+  let smallerId = req.user._id.toString();
+  let biggerId = user._id.toString();
+  if (smallerId > biggerId) {
+    [smallerId, biggerId] = [biggerId, smallerId];
   }
   const friendship = await Friendship.findOne({
     userOneId: smallerId,
