@@ -138,7 +138,7 @@ export const createGroupChat = asyncHandler(async (req, res, next) => {
     { _id: 1 }
   ).lean();
 
-  if (friendShips.length !== validParticipantsIds.length) {
+  if (friendShips && friendShips.length !== validParticipantsIds.length) {
     return next(
       new ApiError(BAD_REQUEST, "You can only add friends to the group")
     );
@@ -192,10 +192,10 @@ export const updateGroupName = asyncHandler(async (req, res, next) => {
 
 const utilityForGroupAction = async (
   groupId,
-  participantId,
+  participantIds,
   loggedInUserId
 ) => {
-  const ids = [groupId, participantId];
+  const ids = [groupId, ...participantIds];
   if (ids.some((id) => !id || id.trim() === "")) {
     return {
       success: false,
@@ -232,32 +232,48 @@ const utilityForGroupAction = async (
 };
 
 export const addParticipant = asyncHandler(async (req, res, next) => {
-  const { groupId, participantId } = req.body;
+  const { groupId, participants } = req.body;
   const loggedInUserId = req.user._id.toString();
+  if (!participants || !Array.isArray(participants) || participants.length === 0) {
+    return next(new ApiError(BAD_REQUEST, "participants is required and should be at least one"));
+  }
   const { success, message, statusCode, groupChat } =
-    await utilityForGroupAction(groupId, participantId, loggedInUserId);
+    await utilityForGroupAction(groupId, participants, loggedInUserId);
   if (!success) return next(new ApiError(statusCode, message));
 
-  if (groupChat.participants.includes(participantId)) {
-    return next(new ApiError(BAD_REQUEST, "This user is already in the group"));
+  const participantsNotInGroup = new Set();
+  participants.forEach((pId) => participantsNotInGroup.add(pId));
+  groupChat.participants.forEach((pId) => participantsNotInGroup.delete(pId.toString()));
+
+  if(participantsNotInGroup.size === 0) {
+    return next(new ApiError(BAD_REQUEST, "All given participants are already in the group"));
   }
-  const [smallerId, biggerId] = sortUserIds(loggedInUserId, participantId);
-  const friendship = await Friendship.findOne(
+  let users = await User.find({ _id: { $in: Array.from(participantsNotInGroup) } })
+    .select({ _id: 1, name: 1, profilePic: 1, bio: 1 })
+    .lean();
+  if (users.length !== participantsNotInGroup.size) { 
+    return next(new ApiError(NOT_FOUND, "Some participants not found"));
+  }
+  const friendShipPairs = Array.from(participantsNotInGroup).map((pId) => {
+    return pId.toString() < loggedInUserId 
+    ? { userOneId: pId, userTwoId: loggedInUserId }
+    : { userOneId: loggedInUserId, userTwoId: pId };
+  });
+
+  const friendships = await Friendship.find(
     {
-      userOneId: smallerId,
-      userTwoId: biggerId,
+      $or: friendShipPairs,
       status: "accepted",
     },
-    { _id: 1 }
-  );
-  if (!friendship) {
-    return next(
-      new ApiError(BAD_REQUEST, "You can only add your friends to the group")
-    );
+    { _id: 1}
+  ).lean();
+  if (friendships && friendships.length !== participantsNotInGroup.size) {
+    return next(new ApiError(NOT_FOUND, "You can only add friends to group"));
   }
-  groupChat.participants.push(participantId);
+    
+  groupChat.participants.push(...participantsNotInGroup);
   await groupChat.save();
-  res.status(OK).json(new ApiResponse(OK, "User added to group"));
+  res.status(OK).json(new ApiResponse(OK, "User added to group", {participants: users}));
 });
 
 export const removeParticipant = asyncHandler(async (req, res, next) => {
@@ -265,7 +281,7 @@ export const removeParticipant = asyncHandler(async (req, res, next) => {
   const loggedInUserId = req.user._id.toString();
 
   const { success, message, statusCode, groupChat } =
-    await utilityForGroupAction(groupId, participantId, loggedInUserId);
+    await utilityForGroupAction(groupId, [participantId], loggedInUserId);
   if (!success) return next(new ApiError(statusCode, message));
 
   if (loggedInUserId === participantId) {
@@ -296,7 +312,7 @@ export const toggleAdmin = asyncHandler(async (req, res, next) => {
   const loggedInUserId = req.user._id.toString();
 
   const { success, message, statusCode, groupChat } =
-    await utilityForGroupAction(groupId, participantId, loggedInUserId);
+    await utilityForGroupAction(groupId, [participantId], loggedInUserId);
   if (!success) return next(new ApiError(statusCode, message));
 
   const pIdx = groupChat.participants.indexOf(participantId);
