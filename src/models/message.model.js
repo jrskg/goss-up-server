@@ -25,6 +25,10 @@ const fileSchema = new Schema(
 );
 
 const messageSchema = new Schema({
+  _id: {
+    type: String,
+    required: true,
+  },
   chatId: {
     type: Schema.Types.ObjectId,
     ref: "Chat",

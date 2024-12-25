@@ -28,6 +28,11 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/friendship", friendshipRoute);
 app.use("/api/v1/chat", chatRoute);
 
-
 app.use(error);
+app.use("*", (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
+  });
+});
 export default app;

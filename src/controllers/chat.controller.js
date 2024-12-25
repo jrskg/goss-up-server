@@ -416,7 +416,6 @@ export const searchGroupChat = asyncHandler(async (req, res, next) => {
           {
             $project: {
               _id: 1,
-              chatType: 1,
               groupName: 1,
               groupIcon: 1,
             },
@@ -507,3 +506,21 @@ export const getAllChats = asyncHandler(async (req, res, next) => {
     })
   );
 });
+
+export const getGroupChatById = asyncHandler(async (req, res, next) => {
+  const { groupId } = req.params;
+  if (!isValidObjectId(groupId)) {
+    return next(new ApiError(BAD_REQUEST, "Invalid group id"));
+  }
+  const groupChat = await Chat.findById(groupId)
+    .populate("participants", "_id name profilePic bio")
+    .lean();
+
+  const participants = [...groupChat.participants];
+  groupChat.participants = groupChat.participants.map((p) => p._id.toString());
+
+  if (!groupChat || groupChat.chatType !== "group") {
+    return next(new ApiError(NOT_FOUND, "Group chat not found"));
+  }
+  res.status(OK).json(new ApiResponse(OK, "Get group chat success", {chatData: groupChat, participants}));
+})

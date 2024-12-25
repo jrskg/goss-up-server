@@ -24,7 +24,7 @@ const chatSchema = new Schema(
     },
     admins: [{ type: Schema.Types.ObjectId, ref: "User" }],
     lastMessageId: {
-      type: Schema.Types.ObjectId,
+      type: String,
       ref: "Message",
     },
   },
