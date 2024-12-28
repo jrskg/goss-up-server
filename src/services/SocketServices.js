@@ -43,18 +43,19 @@ class SocketService{
       socket.on(SOCKET_EVENTS_SERVER.JOIN_ROOM, (payload) => {
         const {currRoomId, prevRoomId} = payload;
         if(prevRoomId) {socket.leave(prevRoomId); console.log("Leaved room", prevRoomId)}
-        console.log("Joined room", currRoomId);
+        console.log("Joined room", currRoomId, socket.user.name);
         socket.join(currRoomId);
       });
 
       socket.on(SOCKET_EVENTS_SERVER.LEAVE_ROOM, (payload) => {
         const {roomId} = payload;
-        console.log("Left room", roomId);
+        console.log("Left room", roomId, socket.user.name);
         socket.leave(roomId);
       });
 
       socket.on(SOCKET_EVENTS_SERVER.SEND_MESSAGE, (payload) => {
         const {roomId, message, participants, senderId} = payload;
+        socket.to(roomId).emit(SOCKET_EVENTS_SERVER.USER_STOP_TYPING, {roomId, userId: senderId, name: socket.user.name});
         // socket.to(roomId).emit(SOCKET_EVENTS_SERVER.NEW_MESSAGE, {roomId, message});
         participants.forEach(p => {
           if(p !== senderId){
@@ -64,6 +65,17 @@ class SocketService{
             })
           }
         });
+      });
+
+      socket.on(SOCKET_EVENTS_SERVER.USER_TYPING, (payload) => {
+        console.log("User typing", payload.name);
+        const {roomId, userId, name} = payload;
+        socket.to(roomId).emit(SOCKET_EVENTS_SERVER.USER_TYPING, {roomId, name, userId});
+      });
+
+      socket.on(SOCKET_EVENTS_SERVER.USER_STOP_TYPING, (payload) => {
+        const {roomId, userId, name} = payload;
+        socket.to(roomId).emit(SOCKET_EVENTS_SERVER.USER_STOP_TYPING, {roomId, name, userId});
       });
 
       socket.on("error", (err) => {
