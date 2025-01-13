@@ -29,4 +29,7 @@ export const REDIS_USER = process.env.REDIS_USER;
 export const REDIS_PASSWORD = process.env.REDIS_PASSWORD;
 export const REDIS_HOST = process.env.REDIS_HOST;
 
-export const KAFKA_BROKER = process.env.KAFKA_BROKER
+export const KAFKA_BROKER = process.env.KAFKA_BROKER;
+
+export const ATTACHMENT_SIZE_LIMIT_MB = process.env.ATTACHMENT_SIZE_LIMIT_MB
+export const MAX_ATTACHMENT_COUNT = process.env.MAX_ATTACHMENT_COUNT

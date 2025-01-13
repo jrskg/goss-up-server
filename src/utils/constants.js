@@ -30,10 +30,13 @@ export const SOCKET_EVENTS_SERVER = {
   LEAVE_ROOM: "leave_room",
   SEND_MESSAGE: "send_message",
   NEW_MESSAGE: "new_message",
-  USER_JOINED: "user_joined",
-  USER_LEFT: "user_left",
   USER_TYPING: "user_typing",
   USER_STOP_TYPING: "user_stop_typing",
+  MESSAGE_STATUS_UPDATE: "message_status_update",
+  // MESSAGE_STATUS_UPDATE_BULK: "message_status_update_bulk",
+  
   USER_ONLINE: "user_online",
-  USER_OFFLINE: "user_offline"
+  USER_OFFLINE: "user_offline",
+  USER_JOINED: "user_joined",
+  USER_LEFT: "user_left",
 };

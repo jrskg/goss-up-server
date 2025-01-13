@@ -53,3 +53,25 @@ export const getAllMessagesOfChat = asyncHandler(async (req, res, next) => {
     })
   );
 });
+
+export const uploadAttachments = asyncHandler(async (req, res, next) => {
+  // {
+  //   fieldname: 'files',
+  //   originalname: 'Anish sir (1).pdf',
+  //   encoding: '7bit',
+  //   mimetype: 'application/pdf',
+  //   destination: './public/attachments',
+  //   filename: 'Anish sir (1)1736507058784.pdf',
+  //   path: 'public/attachments/Anish sir (1)1736507058784.pdf',
+  //   size: 1257189
+  // },
+  
+  // interface IAttachment{
+  //   fileUrl: string;
+  //   fileType: FileType;
+  //   originalFileName: string;
+  //   size: number;
+  // }
+  console.log(req.files);
+  res.status(OK).json(new ApiResponse(OK, "Attachments uploaded"));
+})

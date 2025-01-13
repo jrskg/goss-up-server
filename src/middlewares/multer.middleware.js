@@ -1,4 +1,6 @@
 import multer from "multer";
+import path from "path";
+import { ATTACHMENT_SIZE_LIMIT_MB } from "../configs/env.index.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -11,3 +13,22 @@ const storage = multer.diskStorage({
 });
 
 export const upload = multer({ storage });
+
+const attachmentsStorage = multer.diskStorage({
+  destination: function(req, file, cb){
+    cb(null, "./public/attachments");
+  },
+  filename: function(req, file, cb){
+    const fileExt = path.extname(file.originalname);
+    const baseName = path.basename(file.originalname, fileExt).slice(0, 25);
+    const finalName = `${baseName}${Date.now()}${fileExt}`;
+    cb(null, finalName);
+  }
+});
+
+export const attachmentsUploadMulter = multer({
+  storage: attachmentsStorage,
+  limits:{
+    fileSize: 1024 * 1024 * ATTACHMENT_SIZE_LIMIT_MB
+  }
+})

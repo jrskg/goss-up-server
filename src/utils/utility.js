@@ -113,3 +113,10 @@ export const sortUserIds = (a, b) => {
   let biggerId = b.toString();
   return smallerId > biggerId ? [biggerId, smallerId] : [smallerId, biggerId];
 };
+
+export const getFileType = (mimeType) => {
+  if (mimeType.startsWith("image/")) return "image";
+  if (mimeType.startsWith("video/")) return "video";
+  if (mimeType.startsWith("audio/")) return "audio";
+  return "other";
+};
