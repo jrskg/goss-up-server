@@ -10,6 +10,8 @@ import {
   OK,
   UNAUTHORIZED
 } from "../utils/constants.js";
+import {v2 as cloudinary} from "cloudinary";
+import { CLN_API_KEY, CLN_API_SECRET, CLN_CLOUD_NAME } from "../configs/env.index.js";
 
 export const getAllMessagesOfChat = asyncHandler(async (req, res, next) => {
   let { chatId, page } = req.query;
@@ -74,4 +76,21 @@ export const uploadAttachments = asyncHandler(async (req, res, next) => {
   // }
   console.log(req.files);
   res.status(OK).json(new ApiResponse(OK, "Attachments uploaded"));
+});
+
+export const getUploadSignature = asyncHandler(async(req, res, next) => {
+  const folderName = "gossup_attachments";
+  const timestamp = Math.round((new Date).getTime()/1000)-(50*60);
+  const paramsToSign = {
+    timestamp,   
+    folder: folderName
+  }
+  const signature = cloudinary.utils.api_sign_request(paramsToSign, CLN_API_SECRET);
+  res.status(OK).json(new ApiResponse(OK, "Signature fetched", {
+    signature,
+    timestamp,
+    apiKey: CLN_API_KEY,
+    cloudName: CLN_CLOUD_NAME,
+    folderName
+  }));
 })

@@ -34,7 +34,7 @@ const uploadOnCloudinary = async (filePath, cloudinaryFolder) => {
       image: response.secure_url,
     };
   } catch (error) {
-    fs.unlinkSync(filePath); //remove the saved file from the server as the upload operation got failed
+    fs.unlinkSync(filePath);
     return null;
   }
 };

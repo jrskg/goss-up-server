@@ -26,13 +26,17 @@ class SocketService {
         next(new Error("Not authorized"));
         return;
       }
-      const userData = jwt.verify(token, JWT_SECRET);
-      socket.user = userData;
-      if (!this.userSocketMap.has(userData._id)) {
-        this.userSocketMap.set(userData._id, []);
+      try {
+        const userData = jwt.verify(token, JWT_SECRET);
+        socket.user = userData;
+        if (!this.userSocketMap.has(userData._id)) {
+          this.userSocketMap.set(userData._id, []);
+        }
+        this.userSocketMap.get(userData._id).push(socket);
+        next();
+      } catch (error) {
+        next(new Error("Not authorized"));
       }
-      this.userSocketMap.get(userData._id).push(socket);
-      next();
     });
   }
   initializeListeners() {

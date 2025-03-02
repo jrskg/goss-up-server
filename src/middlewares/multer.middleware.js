@@ -11,9 +11,10 @@ const storage = multer.diskStorage({
     cb(null, `${req.user._id}.${fileType}`);
   },
 });
-
 export const upload = multer({ storage });
 
+
+//this was used to upload attachments to the server
 const attachmentsStorage = multer.diskStorage({
   destination: function(req, file, cb){
     cb(null, "./public/attachments");
@@ -25,7 +26,6 @@ const attachmentsStorage = multer.diskStorage({
     cb(null, finalName);
   }
 });
-
 export const attachmentsUploadMulter = multer({
   storage: attachmentsStorage,
   limits:{
