@@ -39,6 +39,17 @@ class SocketService {
       }
     });
   }
+
+  broadcastToParticipants(event, payload, senderId, participants) {
+    participants.forEach(p => {
+      if (p !== senderId) {
+        const sockets = this.userSocketMap.get(p) || [];
+        sockets.forEach(s => {
+          s.emit(event, payload);
+        });
+      }
+    })
+  }
   initializeListeners() {
     console.log("Socket listeners initialized");
     const io = this.io;
@@ -112,6 +123,56 @@ class SocketService {
             s.emit(SOCKET_EVENTS_SERVER.MESSAGE_STATUS_UPDATE, senderIdMessageMap[senderId]);
           });
         });
+      });
+
+      //for chat details updates and create group or add participants 
+      socket.on(SOCKET_EVENTS_SERVER.CHAT_NAME_ICON_UPDATE, (payload) => {
+        this.broadcastToParticipants(
+          SOCKET_EVENTS_SERVER.CHAT_NAME_ICON_UPDATE,
+          payload,
+          socket.user._id,
+          payload.updatedChat.participants
+        )
+      });
+
+      socket.on(SOCKET_EVENTS_SERVER.TOGGLE_ADMIN, (payload) => {
+        const {chatId, participantId, participants} = payload;
+        this.broadcastToParticipants(
+          SOCKET_EVENTS_SERVER.TOGGLE_ADMIN,
+          {chatId, participantId},
+          socket.user._id,
+          participants
+        );
+      });
+
+      socket.on(SOCKET_EVENTS_SERVER.REMOVED_PARTICIPANT, (payload) => {
+        const {chatId, participantId, participants} = payload;
+        this.broadcastToParticipants(
+          SOCKET_EVENTS_SERVER.REMOVED_PARTICIPANT,
+          {chatId, participantId},
+          socket.user._id,
+          participants
+        );
+      });
+
+      socket.on(SOCKET_EVENTS_SERVER.LEAVE_GROUP, (payload) => {
+        const {chatId, updatedChat} = payload;
+        this.broadcastToParticipants(
+          SOCKET_EVENTS_SERVER.LEAVE_GROUP,
+          {chatId, updatedChat},
+          socket.user._id,
+          updatedChat.participants
+        );
+      });
+
+      socket.on(SOCKET_EVENTS_SERVER.CREATE_OR_ADD_PARTICIPANTS, (payload) => {
+        const {participants} = payload;
+        this.broadcastToParticipants(
+          SOCKET_EVENTS_SERVER.CREATE_OR_ADD_PARTICIPANTS,
+          payload,
+          socket.user._id,
+          participants
+        );
       });
 
       socket.on("error", (err) => {

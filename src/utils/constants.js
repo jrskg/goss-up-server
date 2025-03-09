@@ -34,6 +34,12 @@ export const SOCKET_EVENTS_SERVER = {
   USER_STOP_TYPING: "user_stop_typing",
   MESSAGE_STATUS_UPDATE: "message_status_update",
   // MESSAGE_STATUS_UPDATE_BULK: "message_status_update_bulk",
+
+  CHAT_NAME_ICON_UPDATE: "chat_name_icon_update",
+  TOGGLE_ADMIN: "toggle_admin",
+  REMOVED_PARTICIPANT: "removed_participant",
+  CREATE_OR_ADD_PARTICIPANTS: "create_or_add_participants",
+  LEAVE_GROUP: "leave_group",
   
   USER_ONLINE: "user_online",
   USER_OFFLINE: "user_offline",

@@ -1,6 +1,8 @@
+import jwt from "jsonwebtoken";
+import { isValidObjectId } from "mongoose";
 import { FRONTEND_URL, JWT_SECRET } from "../configs/env.index.js";
-import { User } from "../models/user.model.js";
 import { Friendship } from "../models/friendship.model.js";
+import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -19,8 +21,6 @@ import {
   THEME,
 } from "../utils/constants.js";
 import { cookieOptions, sendEmail, sendToken } from "../utils/utility.js";
-import jwt from "jsonwebtoken";
-import mongoose, { isValidObjectId } from "mongoose";
 
 export const registerUser = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -453,6 +453,24 @@ export const getUserDetails = asyncHandler(async (req, res, next) => {
       new ApiResponse(OK, "Get user success", user)
     );
 });
+
+export const getUsers = asyncHandler(async(req, res,next) => {
+  const users = req.body.users;
+  if(!users || !Array.isArray(users) || users.length === 0){
+    return next(new ApiError(BAD_REQUEST, "Please provide users id"));
+  }
+  const validUsersIds = users.filter((id) => isValidObjectId(id));
+  if (users.length !== validUsersIds.length) {
+    return next(new ApiError(BAD_REQUEST, "Some users are invalid"));
+  }
+  const validUsers = await User.find({ _id: { $in: validUsersIds } })
+    .select("_id name profilePic bio")
+    .lean();
+  if (validUsers.length !== validUsersIds.length) {
+    return next(new ApiError(NOT_FOUND, "Some user do not exists"));
+  }
+  res.status(OK).json(new ApiResponse(OK, "Get users success", validUsers));
+})
 
 export const test = asyncHandler(async (req, res, next) => {
   const start = req.query.start ? Number(req.query.start) : 0;

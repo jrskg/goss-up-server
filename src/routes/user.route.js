@@ -6,6 +6,7 @@ import {
   forgetPassword,
   getSettings,
   getUserDetails,
+  getUsers,
   loadUser,
   loginUser,
   logoutUser,
@@ -52,5 +53,6 @@ router.route("/name").put(authenticate, updateName);
 router.route("/change-password").put(authenticate, changePassword);
 router.route("/search").post(authenticate, searchUsers);
 router.route("/:userId").get(authenticate, getUserDetails);
+router.route("/users").post(authenticate, getUsers);
 
 export default router;

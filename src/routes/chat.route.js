@@ -5,7 +5,7 @@ import {
   createGroupChat,
   createOneToOneChat,
   getAllChats,
-  getGroupChatById,
+  getChatById,
   leaveGroup,
   removeParticipant,
   searchGroupChat,
@@ -30,6 +30,6 @@ router.route("/group/leave").delete(leaveGroup);
 router.route("/group/icon").put(upload.single("groupIcon"), updateGroupIcon);
 router.route("/group/search").post(searchGroupChat);
 router.route("/all").get(getAllChats);
-router.route("/groupchat/:groupId").get(getGroupChatById);
+router.route("/:chatId").get(getChatById);
 
 export default router;

@@ -358,7 +358,7 @@ export const leaveGroup = asyncHandler(async (req, res, next) => {
     groupChat.admins.push(groupChat.participants[0]);
   }
   await groupChat.save();
-  res.status(OK).json(new ApiResponse(OK, "You left the group"));
+  res.status(OK).json(new ApiResponse(OK, "You left the group", groupChat));
 });
 
 export const updateGroupIcon = asyncHandler(async (req, res, next) => {
@@ -507,20 +507,21 @@ export const getAllChats = asyncHandler(async (req, res, next) => {
   );
 });
 
-export const getGroupChatById = asyncHandler(async (req, res, next) => {
-  const { groupId } = req.params;
-  if (!isValidObjectId(groupId)) {
-    return next(new ApiError(BAD_REQUEST, "Invalid group id"));
+export const getChatById = asyncHandler(async (req, res, next) => {
+  const { chatId } = req.params;
+  if (!isValidObjectId(chatId)) {
+    return next(new ApiError(BAD_REQUEST, "Invalid chat id"));
   }
-  const groupChat = await Chat.findById(groupId)
+  const chat = await Chat.findById(chatId)
     .populate("participants", "_id name profilePic bio")
     .lean();
 
-  const participants = [...groupChat.participants];
-  groupChat.participants = groupChat.participants.map((p) => p._id.toString());
+  const participants = [...chat.participants];
+  chat.participants = chat.participants.map((p) => p._id.toString());
 
-  if (!groupChat || groupChat.chatType !== "group") {
-    return next(new ApiError(NOT_FOUND, "Group chat not found"));
+  if (!chat) {
+    //|| groupChat.chatType !== "group" -> initially i was getGroupChatById so i changed to getChatById
+    return next(new ApiError(NOT_FOUND, "Chat not found"));
   }
-  res.status(OK).json(new ApiResponse(OK, "Get group chat success", {chatData: groupChat, participants}));
+  res.status(OK).json(new ApiResponse(OK, "Get group chat success", {chatData: chat, participants}));
 })
