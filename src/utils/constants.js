@@ -19,7 +19,11 @@ export const CLN_CHATICON_FOLDER = "gossup_chaticon";
 export const NOTIFICATION_TYPES = ["message", "friend_request", "group_invite"];
 
 export const KAFKA_NOTIFICATION_TOPIC = "kafka-notification-topic";
+export const KAFKA_NOTIFICATION_GROUP_ID = "kafka-notification-group-id";
 export const KAFKA_MESSAGE_TOPIC = "kafka-message-topic";
+export const KAFKA_MESSAGE_GROUP_ID = "kafka-message-group-id";
+export const KAFKA_INSERT_EVENT = "insert_message";
+export const KAFKA_UPDATE_EVENT = "update_status";
 
 export const MESSAGE_TYPES = ["text", "file"];
 export const FILE_TYPES = ["image", "video", "audio", "other"];
